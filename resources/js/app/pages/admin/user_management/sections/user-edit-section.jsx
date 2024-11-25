@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { update_user_thunk } from "../_redux/user-management-thunk";
+import AlertComponent from "@/app/pages/components/alert";
 
+const InputError = ({ message, className = "" }) => {
+    if (!message) return null;
+    return <p className={`text-red-500 text-sm ${className}`}>{message}</p>;
+};
 
-export default function UserEditSection({ selectedUser, onClose }) {
-    if (!selectedUser) return null; // If no user is selected, return null to not render
+export default function UserEditSection({ selectedUser, onClose, setAlertMessage, setAlertType, setShowAlert }) {
+    if (!selectedUser) return null;
 
     const dispatch = useDispatch();
 
-    // Initialize the state with the selected user's data
+    // State for user data and errors
     const [userData, setUserData] = useState({
         name: selectedUser.name,
         email: selectedUser.email,
@@ -17,7 +22,8 @@ export default function UserEditSection({ selectedUser, onClose }) {
         is_online: selectedUser.is_online,
     });
 
-    // Update user data state when the selectedUser changes
+    const [errors, setErrors] = useState({});
+
     useEffect(() => {
         setUserData({
             name: selectedUser.name,
@@ -28,95 +34,113 @@ export default function UserEditSection({ selectedUser, onClose }) {
         });
     }, [selectedUser]);
 
-    // Handle form input change
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setUserData((prevData) => ({
-            ...prevData,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
-    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const { name, email, password, role_id, is_online } = userData;
+        const formData = { name, email, password, role_id, is_online };
         try {
-            // Dispatch the update thunk with the user ID and updated data
-            const updatedUser = await dispatch(update_user_thunk(selectedUser.id, userData));
-            console.log("Updated user:", updatedUser);
-
-            // Optionally show a success message or perform additional actions
-            alert("User updated successfully!");
-
-            // Close the modal after updating
-            onClose();
+            await dispatch(update_user_thunk(selectedUser.id, formData));
+            setAlertMessage("User updated successfully!");
+            setAlertType("success");
+            setShowAlert(true);
+            onClose(); // Close modal after success
         } catch (error) {
-            console.error("Failed to update user:", error);
-            alert("Failed to update user. Please try again.");
+            setAlertMessage("Failed to update user. Please try again.");
+            setAlertType("error");
+            setShowAlert(true);
+            setErrors(error?.response?.data?.errors || {});
         }
     };
 
     return (
-        <div>
-            <h2>Edit User</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+                {/* Name Input */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        Name
+                    </label>
                     <input
                         type="text"
                         name="name"
+                        id="name"
                         value={userData.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                        onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                     />
+                    <InputError message={errors?.name} />
                 </div>
 
+                {/* Email Input */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        Email
+                    </label>
                     <input
                         type="email"
                         name="email"
+                        id="email"
                         value={userData.email}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                     />
+                    <InputError message={errors?.email} />
                 </div>
 
-                {/* Password field */}
+                {/* Password Input */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        Password (Leave empty to keep current)
+                    </label>
                     <input
                         type="password"
                         name="password"
+                        id="password"
                         value={userData.password}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                     />
+                    <InputError message={errors?.password} />
                 </div>
 
+                {/* Role Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <label htmlFor="role_id" className="block text-sm font-medium text-gray-700">
+                        Role
+                    </label>
                     <select
+                        id="role_id"
                         name="role_id"
                         value={userData.role_id}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                        onChange={(e) => setUserData({ ...userData, role_id: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                     >
-                        <option value={1}>Admin</option>
-                        <option value={2}>User</option>
-                        <option value={3}>Household</option>
+                        <option value="1">Admin</option>
+                        <option value="2">User</option>
+                        <option value="3">Household</option>
                     </select>
+                    <InputError message={errors?.role_id} />
                 </div>
 
-                <div className="flex space-x-4 mt-4">
-                    <button type="submit" className="p-2 bg-blue-500 text-white rounded-lg">
-                        Save Changes
+                
+
+                {/* Submit and Cancel Buttons */}
+                <div className="flex justify-end space-x-4">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md"
+                    >
+                        Cancel
                     </button>
-                    <button type="button" onClick={onClose} className="p-2 bg-gray-500 text-white rounded-lg">
-                        Close
+                    <button
+                        type="submit"
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-md"
+                    >
+                        Save
                     </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     );
 }

@@ -33,21 +33,47 @@ export default function UserCreateSection() {
         try {
             const newAgentData = {
                 name: newAgent?.name,
-                email: newAgent?.email,  // Match API naming
+                email: newAgent?.email,
                 password: newAgent?.password,
                 role_id: newAgent?.role_id,
             };
-            const res = await store.dispatch(create_user_thunk(newAgentData))
-            await store.dispatch(get_users_thunk())
-            if (res.status == 200) {
+    
+            const res = await store.dispatch(create_user_thunk(newAgentData));
+    
+            if (res?.status === 200) {
+                await store.dispatch(get_users_thunk());
+    
+                // Clear form and errors
+                setNewAgent({
+                    name: '',
+                    email: '',
+                    password: '',
+                    role_id: '',
+                });
+                setErrors([]); // Clear errors after success
                 closeModal();
             } else {
-                setErrors(res.response.data.errors)
+                const errorData = res?.response?.data?.errors;
+                if (errorData) {
+                    setErrors(errorData);
+                } else {
+                    setErrors(['An unexpected error occurred.']);
+                    console.error('Unexpected error:', res);
+                }
             }
         } catch (error) {
-            console.error('Error saving product:', error);
+            console.error('Error saving user:', error);
+            const responseErrors = error.response?.data?.errors;
+            if (responseErrors) {
+                setErrors(responseErrors);
+            } else {
+                setErrors(['An error occurred while saving the user.']);
+            }
         }
     };
+    
+    
+    
 
     const typeOptions = [
         { value: '1', label: 'Admin' },
@@ -79,7 +105,7 @@ export default function UserCreateSection() {
                             name="name"
                             type="text"
                             required
-                            value={newAgent?.name}
+                            value={newAgent?.name || ""}
                             onChange={handleChange}
                         />
                     </div>
@@ -91,7 +117,7 @@ export default function UserCreateSection() {
                             name="email" // Match this with the state key
                             type="email"
                             required
-                            value={newAgent?.email}
+                            value={newAgent?.email || ""}
                             onChange={handleChange}
                         />
                         <InputError message={errors?.email} className="mt-2" />
@@ -104,7 +130,7 @@ export default function UserCreateSection() {
                             name="password"
                             type="password"
                             required
-                            value={newAgent?.password}
+                            value={newAgent?.password || ""}
                             onChange={handleChange}
                         />
                     </div>
@@ -116,7 +142,7 @@ export default function UserCreateSection() {
                             name="role_id"
                             options={typeOptions}
                             required
-                            value={newAgent?.role_id}
+                            value={newAgent?.role_id || ""}
                             onChange={handleChange}
                         />
                     </div>

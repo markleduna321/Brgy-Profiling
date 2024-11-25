@@ -4,39 +4,48 @@ import Modal from "@/app/pages/components/modal";
 import UserEditSection from "./user-edit-section";
 import DeleteConfirmationModal from "@/app/pages/components/delete-confirmation-modal";
 import { delete_user_thunk } from "../_redux/user-management-thunk";
+import AlertComponent from "@/app/pages/components/alert";
 
 export default function UserManagementTableSection() {
   const dispatch = useDispatch();
   const { users } = useSelector((store) => store.users);  
   const userData = Array.isArray(users) ? users : [];
-  
+
   const [isViewModalOpen, setViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
 
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); // 'success' or 'error'
+  const [showAlert, setShowAlert] = useState(false);
+
   const handleViewUser = (user) => {
-    setSelectedUser(user); // Set the selected user data
-    setViewModalOpen(true); // Open the modal
+    setSelectedUser(user);
+    setViewModalOpen(true); 
   };
 
   const closeViewModal = () => {
-    setViewModalOpen(false); // Close the modal
-    setSelectedUser(null); // Clear the selected user
+    setViewModalOpen(false); 
+    setSelectedUser(null); 
   };
 
   const handleDeleteUser = (user) => {
-    setUserToDelete(user); // Set the user to delete
-    setDeleteModalOpen(true); // Open the delete modal
+    setUserToDelete(user);
+    setDeleteModalOpen(true); 
   };
 
   const confirmDeleteUser = async () => {
     if (userToDelete) {
       try {
         await dispatch(delete_user_thunk(userToDelete.id));
-        alert("User deleted successfully!");
+        setAlertMessage("User deleted successfully!");
+        setAlertType("success");
+        setShowAlert(true);
       } catch (error) {
-        alert("Failed to delete user. Please try again.");
+        setAlertMessage("Failed to delete user. Please try again.");
+        setAlertType("error");
+        setShowAlert(true);
       } finally {
         setDeleteModalOpen(false);
         setUserToDelete(null);
@@ -53,6 +62,15 @@ export default function UserManagementTableSection() {
     <div className="mt-8 flow-root bg-white p-5 rounded-lg">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <div>
+            {showAlert && (
+              <AlertComponent
+                type={alertType}
+                message={alertMessage}
+                onClose={() => setShowAlert(false)} // Close alert explicitly
+              />
+            )}
+          </div>
           <table className="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
@@ -147,7 +165,13 @@ export default function UserManagementTableSection() {
 
       {/* View/Edit Modal */}
       <Modal isOpen={isViewModalOpen} onClose={closeViewModal}>
-        <UserEditSection selectedUser={selectedUser} onClose={closeViewModal} />
+        <UserEditSection 
+          selectedUser={selectedUser} 
+          onClose={closeViewModal} 
+          setAlertMessage={setAlertMessage}
+          setAlertType={setAlertType}
+          setShowAlert={setShowAlert}
+        />
       </Modal>
 
       {/* Delete Confirmation Modal */}
