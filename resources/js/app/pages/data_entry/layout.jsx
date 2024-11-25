@@ -26,10 +26,9 @@ import { Link } from '@inertiajs/react';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
-  { name: 'User Management', href: '/admin/user_management', icon: UsersIcon },
   { name: 'Household Profiling', href: '/admin/profiling', icon: FolderIcon },
-  { name: 'Reports', href: '/admin/reports', icon: ChartPieIcon },
 ];
+
 
 const userNavigation = [
   { name: 'Your profile', href: '#' },
@@ -40,18 +39,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function AdminLayout({ children }) {
+export default function UserLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [navItems, setNavItems] = useState(navigation);
-
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Access the user data from the global window object
-    if (window.authUser) {
-      setUser(window.authUser);
-    }
-  }, []);
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -227,11 +217,7 @@ export default function AdminLayout({ children }) {
                     />
                     <span className="hidden lg:flex lg:items-center">
                       <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
-                      {user ? (
-                          <span className="mb-0 text-sm font-weight-bold">{user.name}</span>
-                        ) : (
-                          <span className="mb-0 text-sm font-weight-bold">Loading...</span>
-                        )}
+                        Tom Cook
                       </span>
                       <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
                     </span>
