@@ -105,7 +105,7 @@ export default function ProfileCreateSection() {
           
           <Button variant="primary" onClick={openModal} icon={<PlusIcon className="h-5 w-5" />}>New Household</Button>
 
-          <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <Modal isOpen={isModalOpen} onClose={closeModal} width='w-3/4'>
           <h2 className="text-xl font-semibold mb-4">Input Household Data</h2>
           <div className="overflow-y-auto max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-8rem)]">
           <form onSubmit={handleSubmit}>
@@ -119,10 +119,10 @@ export default function ProfileCreateSection() {
         name="last_name"
         type="text"
         required
-        value={newAgent.name}
+        value={newAgent.last_name}
         placeholder="Last Name"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -133,10 +133,10 @@ export default function ProfileCreateSection() {
         name="first_name"
         type="text"
         required
-        value={newAgent.name}
+        value={newAgent.first_name}
         placeholder="First Name"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -147,10 +147,10 @@ export default function ProfileCreateSection() {
         name="middle_name"
         type="text"
         required
-        value={newAgent.name}
+        value={newAgent.middle_name}
         placeholder="Middle Name"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -161,10 +161,10 @@ export default function ProfileCreateSection() {
         name="extension_name"
         type="text"
         required
-        value={newAgent.name}
+        value={newAgent.extension_name}
         placeholder="Jr., Sr. etc."
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -173,11 +173,11 @@ export default function ProfileCreateSection() {
       <SelectComponent
         id="gender"
         name="gender"
-        value={newAgent.role_id}
+        value={newAgent.gender}
         onChange={handleChange}
         options={typeOptionsG}
         required
-        className="w-full"
+        
       />
     </div>
 
@@ -191,7 +191,7 @@ export default function ProfileCreateSection() {
         value={newAgent.contact_number}
         placeholder="09*******"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -202,9 +202,9 @@ export default function ProfileCreateSection() {
         name="birthday"
         type="date"
         required
-        value={newAgent.contact_number}
+        value={newAgent.birthday}
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
   </div>
@@ -216,11 +216,11 @@ export default function ProfileCreateSection() {
       <SelectComponent
         id="civil_status"
         name="civil_status"
-        value={newAgent.role_id}
+        value={newAgent.civil_status}
         onChange={handleChange}
         options={typeOptionsC}
         required
-        className="w-full"
+        
       />
     </div>
 
@@ -234,7 +234,7 @@ export default function ProfileCreateSection() {
         value={newAgent.email}
         placeholder="Email"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -245,10 +245,10 @@ export default function ProfileCreateSection() {
         name="password"
         type="password"
         required
-        value={newAgent.email}
+        value={newAgent.password}
         placeholder="Password"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -265,10 +265,10 @@ export default function ProfileCreateSection() {
         name="purok"
         type="text"
         required
-        value={newAgent.email}
+        value={newAgent.purok}
         placeholder="Purok"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -279,10 +279,10 @@ export default function ProfileCreateSection() {
         name="barangay"
         type="text"
         required
-        value={newAgent.email}
+        value={newAgent.barangay}
         placeholder="Barangay"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -293,10 +293,10 @@ export default function ProfileCreateSection() {
         name="city"
         type="text"
         required
-        value={newAgent.email}
+        value={newAgent.city}
         placeholder="City/Municipality"
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
 
@@ -308,7 +308,7 @@ export default function ProfileCreateSection() {
         required
         value={newAgent.role_id}
         onChange={handleChange}
-        className="w-full"
+        
       />
     </div>
               
@@ -349,7 +349,7 @@ export default function ProfileCreateSection() {
                       value={member.firstName}
                       placeholder="First Name"
                       onChange={(e) => handleFamilyMemberChange(index, e)}
-                      className="w-full"
+                      
                     />
                   </div>
                   <div className="flex-1">
@@ -362,7 +362,7 @@ export default function ProfileCreateSection() {
                       value={member.lastName}
                       placeholder="Last Name"
                       onChange={(e) => handleFamilyMemberChange(index, e)}
-                      className="w-full"
+                      
                     />
                   </div>
                   <div className="flex-1">
@@ -375,7 +375,7 @@ export default function ProfileCreateSection() {
                       value={member.relation}
                       placeholder="Relation"
                       onChange={(e) => handleFamilyMemberChange(index, e)}
-                      className="w-full"
+                      
                     />
                   </div>
                 </div>
