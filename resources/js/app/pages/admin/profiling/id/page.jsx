@@ -1,44 +1,58 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
+import React, { useEffect, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { PaperClipIcon } from '@heroicons/react/20/solid';
+import Button from '@/app/pages/components/button';
+import { PencilSquareIcon } from '@heroicons/react/24/solid';
 
-export default function ProfilingIDDetailsSection() {
-  const { profiling } = useSelector((store) => store.profiling);  
-    console.log('Account details:', profiling); // Debugging output
+import { useDispatch, useSelector } from 'react-redux';
 
-    // Handle case where account data might not be available yet
-    if (!profiling) {
-        return <div>Loading account details...</div>; // Loading state
+import ProfilingIDDetailsSection from './_sections/profiling-id-details-section';
+import AdminLayout from '../../layout';
+import { get_profiling_by_id_thunk } from '../_redux/profiling-thunk';
+
+export default function ProfilingViewPage() {
+    const profiling_id = window.location.pathname.split('/')[3];
+    const dispatch = useDispatch();
+    const { profiling, loading, error } = useSelector((state) => state.profiling);
+
+    useEffect(() => {
+        dispatch(get_profiling_by_id_thunk(profiling_id));
+    }, [dispatch, profiling_id]);
+
+    if (loading) {
+        return <div>Loading...</div>; // Show loading state
     }
-  return (
-    
-    <div>
-      
-      <div className="mt-6 border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">
-          <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-            <dt className="text-sm/6 font-medium text-gray-900">Full name</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{profiling.name || 'N/A'}</dd>
-          </div>
-          
-          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-            <dt className="text-sm/6 font-medium text-gray-900">Email</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{profiling.email || 'N/A'}</dd>
-          </div>
-          <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-            <dt className="text-sm/6 font-medium text-gray-900">Address</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">{profiling.address || 'N/A'}</dd>
-          </div>
-          <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-            <dt className="text-sm/6 font-medium text-gray-900">Contact Number</dt>
-            <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {profiling.contact_number || 'N/A'}
-            </dd>
-          </div>
-          
-        </dl>
-      </div>
-    </div>
-    
-  )
+
+    if (error) {
+        return <div>Error fetching account: {error.message}</div>; // Show error message
+    }
+
+    return (
+        <AdminLayout>
+            <div className="relative bg-white p-5 rounded-lg shadow-md">
+                <div className="flex justify-between">
+                    <div className="px-4 sm:px-0">
+                        <h3 className="text-base font-semibold leading-7 text-gray-900">Account Information</h3>
+                        <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
+                    </div>
+                    <div className="mt-4 sm:ml-16 sm:mt-0 flex gap-4">
+                    <div>
+                        <Button
+                            type="button"
+                            variant="primary"
+                            size="md"
+                            isLoading={false}
+                            disabled={false}
+                            icon={<PencilSquareIcon className="h-5 w-5" />}
+                        >
+                            Edit
+                        </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <ProfilingIDDetailsSection profiling={profiling} /> {/* Pass the account data */}
+            </div>
+        </AdminLayout>
+    );
 }
