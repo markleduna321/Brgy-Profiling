@@ -37,20 +37,37 @@ export default function UserEditSection({ selectedUser, onClose, setAlertMessage
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { name, email, password, role_id, is_online } = userData;
-        const formData = { name, email, password, role_id, is_online };
+        
+        // Only add the password if it's provided
+        const formData = { name, email, role_id, is_online };
+        if (password) {
+            formData.password = password; // Add password only if it's not empty
+        }
+    
         try {
             await dispatch(update_user_thunk(selectedUser.id, formData));
             setAlertMessage("User updated successfully!");
             setAlertType("success");
             setShowAlert(true);
-            onClose(); // Close modal after success
+           
         } catch (error) {
             setAlertMessage("Failed to update user. Please try again.");
             setAlertType("error");
             setShowAlert(true);
             setErrors(error?.response?.data?.errors || {});
+        } finally {
+            // Automatically close the alert after 10 seconds (10000ms)
+            setTimeout(() => {
+                setShowAlert(false);  // Hide the alert
+                setAlertMessage("");  // Optional: Clear the message
+                setAlertType("");    // Optional: Clear the alert type
+            }, 5000); // 10000ms = 5 seconds
+    
+            // Close the modal after the action
+            onClose();
         }
     };
+    
 
     return (
         <form onSubmit={handleSubmit}>
@@ -90,7 +107,7 @@ export default function UserEditSection({ selectedUser, onClose, setAlertMessage
                 {/* Password Input */}
                 <div>
                     <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Password (Leave empty to keep current)
+                        Password
                     </label>
                     <input
                         type="password"

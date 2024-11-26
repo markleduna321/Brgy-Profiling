@@ -49,6 +49,13 @@ export default function UserManagementTableSection() {
       } finally {
         setDeleteModalOpen(false);
         setUserToDelete(null);
+
+         // Automatically close the alert after 10 seconds (10000ms)
+         setTimeout(() => {
+              setShowAlert(false);
+              setAlertMessage("");  // Optional: Clear the message
+              setAlertType("");    // Optional: Clear the alert type
+          }, 5000); // 10000ms = 5 seconds
       }
     }
   };
